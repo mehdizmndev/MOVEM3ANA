@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.icon-fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@keyframes bounce-arrow {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(-12px); }
+}
+.animate-bounce-arrow {
+  animation: bounce-arrow 2s ease-in-out infinite;
+}
+
+/* custom scrollbar for admin */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #e2bfb0; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #ff6b00; }
+
+.dark ::-webkit-scrollbar-thumb { background: #3a3838; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #ff6b00; }
+
+/* kinetic gradient */
+.kinetic-gradient {
+  background: linear-gradient(135deg, #a04100 0%, #ff6b00 100%);
+}
