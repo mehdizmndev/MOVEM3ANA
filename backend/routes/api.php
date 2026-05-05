@@ -1,0 +1,151 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\ClubController;
+use App\Http\Controllers\Api\EventController;
+use App\Http\Controllers\Api\ActivityController;
+use App\Http\Controllers\Api\PromotionController;
+use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\StatController;
+use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\FailedJobController;
+
+
+
+/*
+|--------------------------------------------------------------------------
+| API Routes — TANGIER SPORTS COMMUNITY
+|--------------------------------------------------------------------------
+|
+| Toutes les routes sont préfixées par /api automatiquement.
+| Les routes protégées nécessitent un token Sanctum valide.
+|
+*/
+
+// ─── 1. Authentification (routes publiques) ──────────────────────────────
+Route::prefix('auth')->group(function () {
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('reset-password', [AuthController::class, 'resetPassword']);
+
+    // Routes nécessitant une authentification
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('logout', [AuthController::class, 'logout']);
+        Route::get('me', [AuthController::class, 'me']);
+    });
+});
+
+// ─── Routes protégées (authentification + compte actif) ──────────────────
+Route::middleware(['auth:sanctum', 'active'])->group(function () {
+
+    // ─── 2. Utilisateurs ─────────────────────────────────────────────
+    Route::put('users/profile', [UserController::class, 'updateProfile']);
+    Route::get('users', [UserController::class, 'index']);
+    Route::get('users/{id}', [UserController::class, 'show']);
+    Route::put('users/{id}', [UserController::class, 'update']);
+    Route::delete('users/{id}', [UserController::class, 'destroy']);
+
+    // ─── 3. Clubs ────────────────────────────────────────────────────
+    Route::get('clubs/sport/{sport}', [ClubController::class, 'bySport']);
+    Route::get('clubs/location/{city}', [ClubController::class, 'byLocation']);
+    Route::get('clubs', [ClubController::class, 'index']);
+    Route::post('clubs', [ClubController::class, 'store']);
+    Route::get('clubs/{id}', [ClubController::class, 'show']);
+    Route::put('clubs/{id}', [ClubController::class, 'update']);
+    Route::delete('clubs/{id}', [ClubController::class, 'destroy']);
+
+    // ─── 4. Événements ───────────────────────────────────────────────
+    Route::get('events/club/{clubId}', [EventController::class, 'byClub']);
+    Route::get('events', [EventController::class, 'index']);
+    Route::post('events', [EventController::class, 'store']);
+    Route::get('events/{id}', [EventController::class, 'show']);
+    Route::put('events/{id}', [EventController::class, 'update']);
+    Route::delete('events/{id}', [EventController::class, 'destroy']);
+
+    // ─── 5. Abonnements ──────────────────────────────────────────────
+    Route::post('subscriptions', [SubscriptionController::class, 'store']);
+    Route::delete('subscriptions/{id}', [SubscriptionController::class, 'destroy']);
+    Route::get('subscriptions/user/{userId}', [SubscriptionController::class, 'byUser']);
+    Route::get('subscriptions/club/{clubId}', [SubscriptionController::class, 'byClub']);
+
+    // ─── 6. Messages ─────────────────────────────────────────────────
+    Route::post('messages', [MessageController::class, 'store']);
+    Route::get('messages', [MessageController::class, 'index']);
+    Route::get('messages/{id}', [MessageController::class, 'show']);
+    Route::get('messages/club/{clubId}', [MessageController::class, 'byClub']);
+    Route::get('messages/user/{userId}', [MessageController::class, 'byUser']);
+
+    // ─── 7. Avis / Notes ─────────────────────────────────────────────
+    Route::post('reviews', [ReviewController::class, 'store']);
+    Route::get('reviews/club/{clubId}', [ReviewController::class, 'byClub']);
+    Route::put('reviews/{id}', [ReviewController::class, 'update']);
+    Route::delete('reviews/{id}', [ReviewController::class, 'destroy']);
+
+    // ─── 8. Statistiques ─────────────────────────────────────────────
+    Route::prefix('stats')->group(function () {
+        Route::get('clubs', [StatController::class, 'clubs']);
+        Route::get('events', [StatController::class, 'events']);
+        Route::get('users', [StatController::class, 'users']);
+        Route::get('dashboard', [StatController::class, 'dashboard']);
+    });
+
+    // ─── 9. Administration (admin uniquement) ────────────────────────
+    Route::prefix('admin')->middleware('admin')->group(function () {
+        Route::put('approve-club/{id}', [AdminController::class, 'approveClub']);
+        Route::put('suspend-user/{id}', [AdminController::class, 'suspendUser']);
+        Route::get('reports', [AdminController::class, 'reports']);
+        Route::put('reports/{id}', [AdminController::class, 'updateReportStatus']);
+        
+        // Failed Jobs management
+        Route::get('failed-jobs', [FailedJobController::class, 'index']);
+        Route::post('failed-jobs/{id}/retry', [FailedJobController::class, 'retry']);
+        Route::delete('failed-jobs/{id}', [FailedJobController::class, 'destroy']);
+        Route::delete('failed-jobs', [FailedJobController::class, 'flush']);
+
+        Route::get('logs', [AdminController::class, 'logs']);
+    });
+
+    // ─── 10. Recherche ───────────────────────────────────────────────
+    Route::prefix('search')->group(function () {
+        Route::get('clubs', [SearchController::class, 'clubs']);
+        Route::get('events', [SearchController::class, 'events']);
+    });
+
+    // ─── 11. Activités ───────────────────────────────────────────────
+    Route::get('activities/club/{clubId}', [ActivityController::class, 'byClub']);
+    Route::get('activities/sport/{sport}', [ActivityController::class, 'bySport']);
+    Route::get('activities/city/{city}', [ActivityController::class, 'byCity']);
+    Route::get('activities', [ActivityController::class, 'index']);
+    Route::post('activities', [ActivityController::class, 'store']);
+    Route::get('activities/{id}', [ActivityController::class, 'show']);
+    Route::put('activities/{id}', [ActivityController::class, 'update']);
+    Route::delete('activities/{id}', [ActivityController::class, 'destroy']);
+
+    // ─── 12. Promotions ──────────────────────────────────────────────
+    Route::prefix('promotions')->group(function () {
+        Route::post('/', [PromotionController::class, 'store']);
+        Route::get('/', [PromotionController::class, 'index']);
+        Route::get('/{id}', [PromotionController::class, 'show']);
+        Route::put('/{id}/boost', [PromotionController::class, 'boost']);
+        Route::put('/{id}/cancel', [PromotionController::class, 'cancel']);
+    });
+
+    // ─── 13. Signalements (Reports) ──────────────────────────────────
+    Route::post('reports', [ReportController::class, 'store']);
+    Route::get('my-reports', [ReportController::class, 'myReports']);
+});
+
+//_______________________________________
+Route::get('/test', function () {
+    return response()->json([
+        'status' => 'ok',
+        'message' => 'API fonctionne'
+    ]);
+});
