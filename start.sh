@@ -67,10 +67,12 @@ if [ ! -f "$BACKEND_DIR/.env" ]; then
     (cd "$BACKEND_DIR" && php artisan key:generate --quiet)
 fi
 
-# Create SQLite database if it doesn't exist
-if [ ! -f "$BACKEND_DIR/database/database.sqlite" ]; then
-    echo -e "${CYAN}🗄️  Creating SQLite database...${NC}"
-    touch "$BACKEND_DIR/database/database.sqlite"
+# Handle SQLite if configured
+if grep -q "DB_CONNECTION=sqlite" "$BACKEND_DIR/.env"; then
+    if [ ! -f "$BACKEND_DIR/database/database.sqlite" ]; then
+        echo -e "${CYAN}🗄️  Creating SQLite database...${NC}"
+        touch "$BACKEND_DIR/database/database.sqlite"
+    fi
 fi
 
 # Run migrations
