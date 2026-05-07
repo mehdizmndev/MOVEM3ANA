@@ -24,6 +24,14 @@ class ActivityController extends Controller
 
         // Vérifier que l'utilisateur est le propriétaire du club
         $club = Club::findOrFail($data['club_id']);
+        
+        if (!$club->is_approved && auth()->user()->role !== 'admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Votre club est en attente de validation. Vous ne pouvez pas encore créer d\'activités.',
+            ], 403);
+        }
+
         if (auth()->user()->role !== 'admin' && $club->user_id !== auth()->id()) {
             return response()->json([
                 'success' => false,

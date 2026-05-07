@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 class Event extends Model
 {
     use HasFactory, HasPromotions;
+ 
+    protected $appends = ['available_slots', 'is_sold_out'];
 
     /**
      * The attributes that are mass assignable.
@@ -43,6 +45,29 @@ class Event extends Model
     public function club()
     {
         return $this->belongsTo(Club::class);
+    }
+
+    public function registrations()
+    {
+        return $this->hasMany(EventRegistration::class);
+    }
+
+    /**
+     * Obtenir le nombre de places restantes.
+     */
+    public function getAvailableSlotsAttribute()
+    {
+        if ($this->capacity === null) return null;
+        return max(0, $this->capacity - $this->registrations()->where('status', 'confirmed')->count());
+    }
+
+    /**
+     * Vérifier si l'événement est complet.
+     */
+    public function getIsSoldOutAttribute()
+    {
+        if ($this->capacity === null) return false;
+        return $this->available_slots <= 0;
     }
 
     /**

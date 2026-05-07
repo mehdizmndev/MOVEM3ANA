@@ -3,7 +3,7 @@ import Icon from '../components/Icon'
 
 export default function ForgotPasswordPage() {
   return (
-    <main className="flex-grow pt-24 pb-16 px-4 relative flex items-center justify-center overflow-hidden min-h-screen bg-surface dark:bg-stone-950">
+    <main className="flex-1 pb-16 px-4 relative flex items-center justify-center overflow-hidden min-h-screen bg-surface dark:bg-stone-950">
       {/* Background blobs */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-5%] w-[60%] h-[70%] bg-primary-container opacity-5 blur-[120px] rounded-full" />

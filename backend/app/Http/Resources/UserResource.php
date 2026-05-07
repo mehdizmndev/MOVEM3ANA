@@ -21,6 +21,7 @@ class UserResource extends JsonResource
             'avatar'            => $this->avatar ? asset('storage/' . $this->avatar) : null,
             'sport_preferences' => $this->sport_preferences,
             'is_active'         => $this->is_active,
+            'club'              => new ClubResource($this->whenLoaded('club') ?: $this->club),
             'email_verified_at' => $this->email_verified_at,
             'created_at'        => $this->created_at?->toISOString(),
             'updated_at'        => $this->updated_at?->toISOString(),

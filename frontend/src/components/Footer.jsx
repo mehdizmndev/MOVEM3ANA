@@ -1,6 +1,9 @@
+import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import Icon from './Icon'
 
 export default function Footer() {
+  const { user } = useAuth()
   return (
     <footer className="bg-stone-100 dark:bg-stone-900 w-full mt-auto border-t border-stone-200/20 dark:border-stone-800/20">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-12 px-12 py-16 w-full max-w-screen-2xl mx-auto">
@@ -16,13 +19,24 @@ export default function Footer() {
         <div className="flex flex-col gap-4">
           <h4 className="font-bold text-stone-900 dark:text-stone-100 uppercase tracking-widest text-xs">Platform</h4>
           <ul className="flex flex-col gap-2">
-            {['About Us', 'Find Activities', 'Newsletter'].map(l => (
-              <li key={l}>
-                <a href="#" className="font-body text-sm text-stone-500 hover:text-orange-500 hover:underline decoration-orange-500 underline-offset-4 transition-all duration-200">
-                  {l}
-                </a>
+            {[
+              { label: 'Home', path: '/' },
+              { label: 'Find Activities', path: '/map' },
+              { label: 'Pricing', path: '/pricing' }
+            ].map(l => (
+              <li key={l.label}>
+                <Link to={l.path} className="font-body text-sm text-stone-500 hover:text-orange-500 hover:underline decoration-orange-500 underline-offset-4 transition-all duration-200">
+                  {l.label}
+                </Link>
               </li>
             ))}
+            {user?.role === 'admin' && (
+              <li>
+                <Link to="/admin" className="font-body text-sm text-stone-500 hover:text-orange-500 hover:underline decoration-orange-500 underline-offset-4 transition-all duration-200">
+                  Admin Portal
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
 
@@ -30,11 +44,13 @@ export default function Footer() {
         <div className="flex flex-col gap-4">
           <h4 className="font-bold text-stone-900 dark:text-stone-100 uppercase tracking-widest text-xs">Support</h4>
           <ul className="flex flex-col gap-2">
-            {['Contact Support', 'Privacy Policy'].map(l => (
-              <li key={l}>
-                <a href="#" className="font-body text-sm text-stone-500 hover:text-orange-500 hover:underline decoration-orange-500 underline-offset-4 transition-all duration-200">
-                  {l}
-                </a>
+            {[
+              { label: 'Contact Support', path: '/contact' }
+            ].map(l => (
+              <li key={l.label}>
+                <Link to={l.path} className="font-body text-sm text-stone-500 hover:text-orange-500 hover:underline decoration-orange-500 underline-offset-4 transition-all duration-200">
+                  {l.label}
+                </Link>
               </li>
             ))}
           </ul>

@@ -51,7 +51,7 @@ class StatController extends Controller
                 'total_events'    => Event::count(),
                 'upcoming_events' => Event::where('date', '>=', now())->count(),
                 'past_events'     => Event::where('date', '<', now())->count(),
-                'events_by_month' => Event::selectRaw('MONTH(date) as month, YEAR(date) as year, COUNT(*) as count')
+                'events_by_month' => Event::selectRaw("strftime('%m', date) as month, strftime('%Y', date) as year, COUNT(*) as count")
                     ->groupBy('year', 'month')
                     ->orderBy('year', 'desc')
                     ->orderBy('month', 'desc')

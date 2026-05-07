@@ -44,6 +44,74 @@ class AdminController extends Controller
     }
 
     /**
+     * GET /api/admin/clubs
+     * Liste de tous les clubs (pour gestion admin).
+     */
+    public function allClubs(Request $request): JsonResponse
+    {
+        $query = Club::with('user');
+
+        // Filtre optionnel par statut
+        if ($request->has('status')) {
+            if ($request->status === 'pending') {
+                $query->where('is_approved', false);
+            } elseif ($request->status === 'active') {
+                $query->where('is_approved', true)->where('is_active', true);
+            } elseif ($request->status === 'disabled') {
+                $query->where('is_active', false);
+            }
+        }
+
+        $clubs = $query->orderBy('created_at', 'desc')->paginate(15);
+
+        return response()->json([
+            'success' => true,
+            'data'    => ClubResource::collection($clubs),
+            'meta'    => [
+                'current_page' => $clubs->currentPage(),
+                'last_page'    => $clubs->lastPage(),
+                'per_page'     => $clubs->perPage(),
+                'total'        => $clubs->total(),
+            ],
+        ]);
+    }
+
+    /**
+     * PUT /api/admin/clubs/{id}/status
+     * Mettre à jour le statut d'un club (approbation, activation).
+     */
+    public function updateClubStatus(Request $request, string $id): JsonResponse
+    {
+        $club = Club::findOrFail($id);
+
+        $validated = $request->validate([
+            'is_approved' => 'sometimes|boolean',
+            'is_active'   => 'sometimes|boolean',
+        ]);
+
+        $club->update($validated);
+
+        // Log
+        $action = 'club_status_updated';
+        $desc = "Statut du club {$club->name} mis à jour. ";
+        if (isset($validated['is_approved'])) $desc .= "Approuvé: " . ($validated['is_approved'] ? 'Oui' : 'Non') . ". ";
+        if (isset($validated['is_active']))   $desc .= "Actif: " . ($validated['is_active'] ? 'Oui' : 'Non') . ". ";
+
+        ActivityLog::create([
+            'user_id'     => auth()->id(),
+            'action'      => $action,
+            'description' => $desc,
+            'ip_address'  => $request->ip(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Statut du club mis à jour.',
+            'data'    => new ClubResource($club->fresh()),
+        ]);
+    }
+
+    /**
      * PUT /api/admin/suspend-user/{id}
      * Suspendre ou réactiver un utilisateur.
      */
@@ -171,6 +239,41 @@ class AdminController extends Controller
                 'per_page'     => $logs->perPage(),
                 'total'        => $logs->total(),
             ],
+        ]);
+    }
+
+    /**
+     * GET /api/admin/events
+     */
+    public function allEvents(Request $request): JsonResponse
+    {
+        $status = $request->query('status');
+        $query = \App\Models\Event::with('club');
+
+        if ($status === 'upcoming') {
+            $query->where('date', '>=', now());
+        } elseif ($status === 'past') {
+            $query->where('date', '<', now());
+        }
+
+        $events = $query->orderBy('date', 'desc')->paginate(20);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $events,
+        ]);
+    }
+
+    /**
+     * GET /api/admin/promotions
+     */
+    public function allPromotions(Request $request): JsonResponse
+    {
+        $promotions = \App\Models\Promotion::with('club')->orderBy('created_at', 'desc')->paginate(20);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $promotions,
         ]);
     }
 }

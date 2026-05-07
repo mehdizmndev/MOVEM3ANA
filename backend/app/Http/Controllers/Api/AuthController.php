@@ -11,6 +11,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\ActivityLog;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -81,7 +82,7 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Connexion réussie.',
             'data'    => [
-                'user'  => new UserResource($user),
+                'user'  => new UserResource($user->load('club')),
                 'token' => $token,
             ],
         ]);
@@ -179,6 +180,63 @@ class AuthController extends Controller
             'success' => false,
             'message' => $message,
         ], $code);
+    }
+
+    /**
+     * Redirect to Google OAuth
+     */
+    public function redirectToGoogle()
+    {
+        $googleClientId = config('services.google.client_id');
+        $redirectUri = config('services.google.redirect');
+        $frontendUrl = config('app.frontend_url', 'http://localhost:5173');
+
+        if (!$googleClientId) {
+            return redirect($frontendUrl . '/auth?error=google_not_configured');
+        }
+
+        $authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' . http_build_query([
+            'client_id' => $googleClientId,
+            'redirect_uri' => $redirectUri,
+            'response_type' => 'code',
+            'scope' => 'email profile',
+            'state' => csrf_token(),
+        ]);
+
+        return redirect($authUrl);
+    }
+
+    /**
+     * Handle Google OAuth callback
+     */
+    public function handleGoogleCallback(Request $request)
+    {
+        $frontendUrl = config('app.frontend_url', 'http://localhost:5173');
+
+        if ($request->has('error')) {
+            return redirect($frontendUrl . '/auth?error=' . $request->get('error'));
+        }
+
+        // Note: You need to set up Laravel Socialite for full implementation
+        return redirect($frontendUrl . '/auth?error=google_not_configured');
+    }
+
+    /**
+     * Redirect to Apple OAuth
+     */
+    public function redirectToApple()
+    {
+        $frontendUrl = config('app.frontend_url', 'http://localhost:5173');
+        return redirect($frontendUrl . '/auth?error=apple_not_configured');
+    }
+
+    /**
+     * Handle Apple OAuth callback
+     */
+    public function handleAppleCallback(Request $request)
+    {
+        $frontendUrl = config('app.frontend_url', 'http://localhost:5173');
+        return redirect($frontendUrl . '/auth?error=apple_not_configured');
     }
 
 }

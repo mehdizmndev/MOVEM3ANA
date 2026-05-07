@@ -147,6 +147,28 @@ class UserController extends Controller
     }
 
     /**
+     * PUT /api/users/profile/password
+     * Changer son mot de passe.
+     */
+    public function updatePassword(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password'         => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user = auth()->user();
+        $user->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Mot de passe mis à jour avec succès.',
+        ]);
+    }
+
+    /**
      * Réponse standard pour accès interdit
      */
     private function forbidden(): JsonResponse

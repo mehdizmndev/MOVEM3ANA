@@ -1,14 +1,85 @@
 import { useState } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
+import { useSearchParams, Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { auth } from '../services/api'
 import Icon from '../components/Icon'
+
+const GOOGLE_AUTH_URL = 'http://localhost:8000/auth/google'
+const APPLE_AUTH_URL = 'http://localhost:8000/auth/apple'
 
 export default function AuthPage() {
   const [params] = useSearchParams()
   const [tab, setTab] = useState(params.get('tab') === 'signup' ? 'signup' : 'login')
   const [role, setRole] = useState('user')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const { login, register } = useAuth()
+  const navigate = useNavigate()
+
+  const handleGoogleLogin = () => {
+    window.location.href = GOOGLE_AUTH_URL
+  }
+
+  const handleAppleLogin = () => {
+    window.location.href = APPLE_AUTH_URL
+  }
+
+  const handleRedirection = (userData) => {
+    if (userData.role === 'admin') {
+      navigate('/admin')
+    } else if (userData.role === 'club') {
+      if (userData.club) {
+        navigate('/club-portal')
+      } else {
+        navigate('/club-create')
+      }
+    } else {
+      navigate('/')
+    }
+  }
+
+  const handleLogin = async (e) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    const email = e.target.email.value
+    const password = e.target.password.value
+    try {
+      const res = await login(email, password)
+      const userData = res.data?.user || res.user || res
+      handleRedirection(userData)
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSignup = async (e) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    const data = {
+      first_name: e.target.first_name.value,
+      last_name: e.target.last_name.value,
+      email: e.target.email.value,
+      password: e.target.password.value,
+      password_confirmation: e.target.password_confirmation.value,
+      role: role,
+    }
+    try {
+      const res = await register(data)
+      const userData = res.data?.user || res.user || res
+      handleRedirection(userData)
+    } catch (err) {
+      setError(err.response?.data?.message || 'Registration failed')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
-    <main className="flex-grow pt-24 pb-16 px-4 relative flex items-center justify-center overflow-hidden min-h-screen bg-surface dark:bg-stone-950">
+    <main className="flex-1 pb-16 px-4 relative flex items-center justify-center overflow-hidden min-h-screen bg-surface dark:bg-stone-950">
       {/* Background blobs */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-5%] w-[60%] h-[70%] bg-primary-container opacity-5 blur-[120px] rounded-full" />
@@ -43,19 +114,27 @@ export default function AuthPage() {
           <div className="p-8 md:p-10">
             {/* ── LOGIN ── */}
             {tab === 'login' && (
-              <div className="space-y-6">
+              <form className="space-y-6" onSubmit={handleLogin}>
                 <div className="text-center mb-8">
                   <h1 className="font-body font-black text-3xl tracking-tight text-on-surface dark:text-stone-100 uppercase mb-2">Welcome Back</h1>
                   <p className="text-stone-500 text-sm font-body">Fuel your performance. Sign in to your portal.</p>
                 </div>
 
+                {error && (
+                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    {error}
+                  </div>
+                )}
+
                 <div className="space-y-4">
                   <div className="space-y-1">
                     <label className="text-xs font-bold uppercase tracking-widest text-stone-500 px-1 font-body">Email Address</label>
                     <input
+                      name="email"
                       className="w-full bg-surface-container-high dark:bg-stone-800 border-0 border-b-2 border-outline-variant/30 focus:border-primary-container focus:ring-0 px-4 py-3 rounded-t-lg transition-all text-on-surface dark:text-stone-100 placeholder:text-stone-400 font-body"
                       placeholder="athlete@movem3ana.com"
                       type="email"
+                      required
                     />
                   </div>
                   <div className="space-y-1">
@@ -64,15 +143,17 @@ export default function AuthPage() {
                       <Link to="/forgot-password" className="text-xs font-semibold text-primary-container hover:underline font-body">Forgot password?</Link>
                     </div>
                     <input
+                      name="password"
                       className="w-full bg-surface-container-high dark:bg-stone-800 border-0 border-b-2 border-outline-variant/30 focus:border-primary-container focus:ring-0 px-4 py-3 rounded-t-lg transition-all text-on-surface dark:text-stone-100 font-body"
                       placeholder="••••••••"
                       type="password"
+                      required
                     />
                   </div>
                 </div>
 
-                <button className="w-full bg-primary-container hover:bg-primary text-white font-headline uppercase tracking-wider text-xl font-black py-4 rounded-xl transition-all active:scale-[0.98] transform shadow-lg shadow-primary-container/20">
-                  Enter Arena
+                <button disabled={loading} className="w-full bg-primary-container hover:bg-primary text-white font-headline uppercase tracking-wider text-xl font-black py-4 rounded-xl transition-all active:scale-[0.98] transform shadow-lg shadow-primary-container/20 disabled:opacity-50">
+                  {loading ? 'Signing in...' : 'Enter Arena'}
                 </button>
 
                 <div className="relative py-4">
@@ -85,37 +166,45 @@ export default function AuthPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <button className="flex items-center justify-center gap-3 py-3 border border-stone-200 dark:border-stone-700 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors active:scale-95 transform">
+                  <button type="button" onClick={handleGoogleLogin} className="flex items-center justify-center gap-3 py-3 border border-stone-200 dark:border-stone-700 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors active:scale-95 transform">
                     <span className="font-black text-lg text-primary-container">G</span>
                     <span className="text-sm font-bold font-body text-on-surface dark:text-stone-100">Google</span>
                   </button>
-                  <button className="flex items-center justify-center gap-3 py-3 border border-stone-200 dark:border-stone-700 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors active:scale-95 transform">
+                  <button type="button" onClick={handleAppleLogin} className="flex items-center justify-center gap-3 py-3 border border-stone-200 dark:border-stone-700 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors active:scale-95 transform">
                     <Icon name="phone_iphone" size={20} className="text-on-surface dark:text-stone-100" />
                     <span className="text-sm font-bold font-body text-on-surface dark:text-stone-100">Apple</span>
                   </button>
                 </div>
-              </div>
+              </form>
             )}
 
             {/* ── SIGN UP ── */}
             {tab === 'signup' && (
-              <div className="space-y-5">
+              <form className="space-y-5" onSubmit={handleSignup}>
                 <div className="text-center mb-8">
                   <h1 className="font-body font-black text-3xl tracking-tight text-on-surface dark:text-stone-100 uppercase mb-2">Join The Squad</h1>
                   <p className="text-stone-500 text-sm font-body">Start your kinetic journey today.</p>
                 </div>
 
+                {error && (
+                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    {error}
+                  </div>
+                )}
+
                 {/* Role toggle */}
                 <div className="flex bg-surface-container-high dark:bg-stone-800 p-1 rounded-full mb-6">
                   <button
+                    type="button"
                     onClick={() => setRole('user')}
                     className={`flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-full transition-all font-body ${role === 'user' ? 'bg-white dark:bg-stone-700 shadow-sm text-primary-container' : 'text-stone-500'}`}
                   >
                     I'm a User
                   </button>
                   <button
-                    onClick={() => setRole('owner')}
-                    className={`flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-full transition-all font-body ${role === 'owner' ? 'bg-white dark:bg-stone-700 shadow-sm text-primary-container' : 'text-stone-500'}`}
+                    type="button"
+                    onClick={() => setRole('club')}
+                    className={`flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-full transition-all font-body ${role === 'club' ? 'bg-white dark:bg-stone-700 shadow-sm text-primary-container' : 'text-stone-500'}`}
                   >
                     I'm a Club Owner
                   </button>
@@ -126,9 +215,11 @@ export default function AuthPage() {
                     <div key={label} className="space-y-1">
                       <label className="text-xs font-bold uppercase tracking-widest text-stone-500 px-1 font-body">{label}</label>
                       <input
+                        name={i === 0 ? 'first_name' : 'last_name'}
                         className="w-full bg-surface-container-high dark:bg-stone-800 border-0 border-b-2 border-outline-variant/30 focus:border-primary-container focus:ring-0 px-4 py-3 rounded-t-lg transition-all text-on-surface dark:text-stone-100 placeholder:text-stone-400 font-body"
                         placeholder={i === 0 ? 'John' : 'Doe'}
                         type="text"
+                        required
                       />
                     </div>
                   ))}
@@ -137,27 +228,31 @@ export default function AuthPage() {
                 <div className="space-y-1">
                   <label className="text-xs font-bold uppercase tracking-widest text-stone-500 px-1 font-body">Email Address</label>
                   <input
+                    name="email"
                     className="w-full bg-surface-container-high dark:bg-stone-800 border-0 border-b-2 border-outline-variant/30 focus:border-primary-container focus:ring-0 px-4 py-3 rounded-t-lg transition-all text-on-surface dark:text-stone-100 placeholder:text-stone-400 font-body"
                     placeholder="athlete@movem3ana.com"
                     type="email"
+                    required
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  {[['Password', '••••••••'], ['Confirm', '••••••••']].map(([label, ph]) => (
+                  {[['Password', 'password'], ['Confirm', 'password_confirmation']].map(([label, name]) => (
                     <div key={label} className="space-y-1">
                       <label className="text-xs font-bold uppercase tracking-widest text-stone-500 px-1 font-body">{label}</label>
                       <input
+                        name={name}
                         className="w-full bg-surface-container-high dark:bg-stone-800 border-0 border-b-2 border-outline-variant/30 focus:border-primary-container focus:ring-0 px-4 py-3 rounded-t-lg transition-all text-on-surface dark:text-stone-100 font-body"
-                        placeholder={ph}
+                        placeholder="••••••••"
                         type="password"
+                        required
                       />
                     </div>
                   ))}
                 </div>
 
                 <div className="flex items-start gap-3 px-1">
-                  <input className="mt-1 rounded border-stone-300 text-primary-container focus:ring-primary-container" type="checkbox" />
+                  <input name="terms" className="mt-1 rounded border-stone-300 text-primary-container focus:ring-primary-container" type="checkbox" required />
                   <label className="text-xs text-stone-500 leading-tight font-body">
                     By creating an account, I agree to the{' '}
                     <a href="#" className="text-primary-container font-semibold hover:underline">Terms of Service</a>
@@ -166,10 +261,10 @@ export default function AuthPage() {
                   </label>
                 </div>
 
-                <button className="w-full bg-primary-container hover:bg-primary text-white font-headline uppercase tracking-wider text-xl font-black py-4 rounded-xl transition-all active:scale-[0.98] transform shadow-lg shadow-primary-container/20">
-                  Create Account
+                <button disabled={loading} className="w-full bg-primary-container hover:bg-primary text-white font-headline uppercase tracking-wider text-xl font-black py-4 rounded-xl transition-all active:scale-[0.98] transform shadow-lg shadow-primary-container/20 disabled:opacity-50">
+                  {loading ? 'Creating account...' : 'Create Account'}
                 </button>
-              </div>
+              </form>
             )}
           </div>
         </div>

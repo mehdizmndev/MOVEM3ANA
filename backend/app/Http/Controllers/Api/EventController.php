@@ -23,6 +23,14 @@ class EventController extends Controller
 
         // Vérifier que l'utilisateur est le propriétaire du club
         $club = Club::findOrFail($data['club_id']);
+        
+        if (!$club->is_approved && auth()->user()->role !== 'admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Votre club est en attente de validation. Vous ne pouvez pas encore créer d\'événements.',
+            ], 403);
+        }
+
         if (auth()->user()->role !== 'admin' && $club->user_id !== auth()->id()) {
             return response()->json([
                 'success' => false,
@@ -166,6 +174,94 @@ class EventController extends Controller
                 'per_page'     => $events->perPage(),
                 'total'        => $events->total(),
             ],
+        ]);
+    }
+
+    /**
+     * Liste des événements du club connecté (gestion club).
+     */
+    public function myEvents(Request $request): JsonResponse
+    {
+        $club = auth()->user()->club;
+        if (!$club) {
+            return response()->json(['success' => false, 'message' => 'Club non trouvé.'], 404);
+        }
+
+        $query = Event::where('club_id', $club->id);
+
+        if ($request->has('status')) {
+            $now = now();
+            if ($request->status === 'upcoming') {
+                $query->where('date', '>=', $now);
+            } elseif ($request->status === 'past') {
+                $query->where('date', '<', $now);
+            }
+        }
+
+        $events = $query->orderBy('date', 'desc')->get();
+
+        return response()->json([
+            'success' => true,
+            'data'    => EventResource::collection($events),
+        ]);
+    }
+
+    /**
+     * S'inscrire à un événement (pour utilisateur).
+     */
+    public function enroll(string $eventId): JsonResponse
+    {
+        $event = Event::findOrFail($eventId);
+        $user = auth()->user();
+
+        // 1. Vérifier si déjà inscrit
+        $alreadyRegistered = \App\Models\EventRegistration::where('user_id', $user->id)
+            ->where('event_id', $event->id)
+            ->where('status', 'confirmed')
+            ->exists();
+
+        if ($alreadyRegistered) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous êtes déjà inscrit à cet événement.',
+            ], 400);
+        }
+
+        // 2. Vérifier la capacité
+        if ($event->is_sold_out) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Désolé, cet événement est complet.',
+            ], 400);
+        }
+
+        // 3. Créer l'inscription
+        \App\Models\EventRegistration::create([
+            'user_id'  => $user->id,
+            'event_id' => $event->id,
+            'status'   => 'confirmed',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Inscription réussie !',
+        ]);
+    }
+
+    /**
+     * Annuler une inscription.
+     */
+    public function cancelEnrollment(string $eventId): JsonResponse
+    {
+        $registration = \App\Models\EventRegistration::where('user_id', auth()->id())
+            ->where('event_id', $eventId)
+            ->firstOrFail();
+
+        $registration->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Inscription annulée.',
         ]);
     }
 }

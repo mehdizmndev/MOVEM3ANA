@@ -67,7 +67,7 @@ export default function PricingPage() {
   const [openFaq, setOpenFaq] = useState(0)
 
   return (
-    <main className="pt-24 pb-20 bg-background dark:bg-stone-950 min-h-screen">
+    <main className="pb-20 bg-background dark:bg-stone-950 min-h-screen">
       {/* ── Hero ── */}
       <section className="max-w-screen-2xl mx-auto px-6 py-12 md:py-20 text-center">
         <h1 className="font-headline text-6xl md:text-8xl font-black uppercase tracking-tighter text-on-background dark:text-stone-100 leading-[0.9] mb-4">
@@ -114,9 +114,9 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
-            <button className={`w-full py-4 rounded-xl font-headline font-bold uppercase tracking-wider transition-all active:scale-95 ${btnClass}`}>
+            <Link to="/auth?tab=signup" className={`w-full py-4 rounded-xl font-headline font-bold uppercase tracking-wider transition-all active:scale-95 text-center ${btnClass}`}>
               {btnLabel}
-            </button>
+            </Link>
           </div>
         ))}
       </section>

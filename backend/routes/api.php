@@ -42,6 +42,40 @@ Route::prefix('auth')->group(function () {
     });
 });
 
+// ─── Public Routes (accessible sans authentification) ─────────────────────
+Route::get('clubs', [ClubController::class, 'index']);
+Route::get('clubs/{id}', [ClubController::class, 'show']);
+Route::get('clubs/sport/{sport}', [ClubController::class, 'bySport']);
+
+Route::get('activities', [ActivityController::class, 'index']);
+Route::get('activities/{id}', [ActivityController::class, 'show']);
+Route::get('activities/sport/{sport}', [ActivityController::class, 'bySport']);
+
+Route::get('events', [EventController::class, 'index']);
+Route::get('events/{id}', [EventController::class, 'show']);
+
+Route::get('promotions', [PromotionController::class, 'index']);
+Route::get('promotions/{id}', [PromotionController::class, 'show']);
+
+Route::get('clubs/location/{city}', [ClubController::class, 'byLocation']);
+
+Route::get('events/club/{clubId}', [EventController::class, 'byClub']);
+
+Route::get('activities/club/{clubId}', [ActivityController::class, 'byClub']);
+Route::get('activities/city/{city}', [ActivityController::class, 'byCity']);
+
+Route::get('reviews/club/{clubId}', [ReviewController::class, 'byClub']);
+
+Route::get('stats/dashboard', [StatController::class, 'dashboard']);
+Route::get('stats/clubs', [StatController::class, 'clubs']);
+Route::get('stats/events', [StatController::class, 'events']);
+Route::get('stats/users', [StatController::class, 'users']);
+
+Route::post('contact', [\App\Http\Controllers\Api\ContactController::class, 'store']);
+
+Route::get('search/clubs', [SearchController::class, 'clubs']);
+Route::get('search/events', [SearchController::class, 'events']);
+
 // ─── Routes protégées (authentification + compte actif) ──────────────────
 Route::middleware(['auth:sanctum', 'active'])->group(function () {
 
@@ -62,12 +96,15 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
     Route::delete('clubs/{id}', [ClubController::class, 'destroy']);
 
     // ─── 4. Événements ───────────────────────────────────────────────
+    Route::get('my-events', [EventController::class, 'myEvents']);
     Route::get('events/club/{clubId}', [EventController::class, 'byClub']);
     Route::get('events', [EventController::class, 'index']);
     Route::post('events', [EventController::class, 'store']);
     Route::get('events/{id}', [EventController::class, 'show']);
     Route::put('events/{id}', [EventController::class, 'update']);
     Route::delete('events/{id}', [EventController::class, 'destroy']);
+    Route::post('events/{id}/enroll', [EventController::class, 'enroll']);
+    Route::post('events/{id}/cancel', [EventController::class, 'cancelEnrollment']);
 
     // ─── 5. Abonnements ──────────────────────────────────────────────
     Route::post('subscriptions', [SubscriptionController::class, 'store']);
@@ -110,7 +147,13 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
         Route::delete('failed-jobs', [FailedJobController::class, 'flush']);
 
         Route::get('logs', [AdminController::class, 'logs']);
+        Route::get('clubs', [AdminController::class, 'allClubs']);
+        Route::put('clubs/{id}/status', [AdminController::class, 'updateClubStatus']);
+        Route::get('events', [AdminController::class, 'allEvents']);
+        Route::get('promotions', [AdminController::class, 'allPromotions']);
     });
+
+    Route::put('users/profile/password', [UserController::class, 'updatePassword']);
 
     // ─── 10. Recherche ───────────────────────────────────────────────
     Route::prefix('search')->group(function () {
