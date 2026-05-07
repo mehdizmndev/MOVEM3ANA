@@ -33,6 +33,8 @@ class ClubResource extends JsonResource
             'is_active'         => $this->is_active,
             'average_rating'    => round($this->average_rating, 1),
             'subscribers_count' => $this->subscribers_count,
+            'offers'            => $this->offers, // Simplifié, on pourrait utiliser un OfferResource
+            'events'            => $this->events,
             'owner'             => new UserResource($this->whenLoaded('user')),
             'created_at'        => $this->created_at?->toISOString(),
             'updated_at'        => $this->updated_at?->toISOString(),

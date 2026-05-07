@@ -4,40 +4,40 @@ import Icon from '../components/Icon'
 
 const PLANS = [
   {
-    name: 'Starter',
-    price: 'FREE',
-    sub: 'Essential features for beginners',
-    features: ['Access to local map', 'Public activity feed'],
-    locked: ['Priority booking'],
+    name: 'Découverte',
+    price: '0 DH',
+    sub: 'Parfait pour explorer les clubs de Tanger',
+    features: ['Accès à la carte interactive', 'Consultation des avis clients', 'Réservation de 2 séances / mois'],
+    locked: ['Accès prioritaire', 'Support premium'],
     featured: false,
     cardClass: 'bg-surface-container-low dark:bg-stone-800 border border-outline-variant/10 dark:border-stone-700',
-    btnLabel: 'Get Started',
+    btnLabel: 'Commencer Gratuitement',
     btnClass: 'border-2 border-primary text-primary hover:bg-primary hover:text-white',
     priceClass: 'text-on-background dark:text-stone-100',
   },
   {
-    name: 'Pro',
-    price: '€14.99',
-    period: '/MO',
-    sub: 'Elevate your game with advanced tools',
-    features: ['Unlimited activity booking', 'Advanced performance analytics', 'Early access to events'],
-    locked: [],
+    name: 'Passion',
+    price: '199 DH',
+    period: '/MOIS',
+    sub: 'Pour les sportifs réguliers et passionnés',
+    features: ['Réservations illimitées', 'Accès aux événements exclusifs', 'Statistiques de performance', 'Support standard'],
+    locked: ['Coaching 1-on-1'],
     featured: true,
     cardClass: 'bg-primary-container text-white shadow-2xl shadow-primary/20 scale-105 z-10',
-    btnLabel: 'Go Pro Now',
+    btnLabel: 'Choisir le Pass Passion',
     btnClass: 'bg-white text-primary shadow-xl',
     priceClass: 'text-white',
   },
   {
     name: 'Elite',
-    price: '€29.99',
-    period: '/MO',
-    sub: 'The ultimate athlete experience',
-    features: ['Everything in Pro plan', '1-on-1 coaching sessions', 'VIP club lounge access'],
+    price: '499 DH',
+    period: '/MOIS',
+    sub: 'L\'expérience ultime pour les athlètes exigeants',
+    features: ['Tout du Pass Passion', 'Sessions de coaching privées', 'Accès aux Lounges VIP', 'Support Prioritaire 24/7'],
     locked: [],
     featured: false,
     cardClass: 'bg-surface-container-low dark:bg-stone-800 border border-outline-variant/10 dark:border-stone-700',
-    btnLabel: 'Go Elite',
+    btnLabel: 'Devenir Elite',
     btnClass: 'border-2 border-on-background dark:border-stone-100 text-on-background dark:text-stone-100 hover:bg-on-background dark:hover:bg-stone-100 hover:text-surface dark:hover:text-stone-900',
     priceClass: 'text-on-background dark:text-stone-100',
   },
@@ -71,10 +71,10 @@ export default function PricingPage() {
       {/* ── Hero ── */}
       <section className="max-w-screen-2xl mx-auto px-6 py-12 md:py-20 text-center">
         <h1 className="font-headline text-6xl md:text-8xl font-black uppercase tracking-tighter text-on-background dark:text-stone-100 leading-[0.9] mb-4">
-          Choose Your <span className="text-primary italic">MOVE M3ANA Pass</span>
+          Choisissez votre <span className="text-primary italic">Pass MOVE M3ANA</span>
         </h1>
         <p className="max-w-2xl mx-auto text-lg text-tertiary dark:text-stone-400 font-medium font-body">
-          Unlock your peak performance with flexible plans tailored for every athlete, from weekend warriors to elite pros.
+          Libérez votre potentiel avec des forfaits flexibles adaptés à chaque sportif, du débutant à l'athlète de haut niveau.
         </p>
       </section>
 
@@ -87,7 +87,7 @@ export default function PricingPage() {
           >
             {featured && (
               <div className="absolute top-4 right-[-35px] bg-secondary-container text-on-secondary-container font-headline font-black px-12 py-1 rotate-45 uppercase text-xs tracking-widest shadow-lg">
-                Most Popular
+                Populaire
               </div>
             )}
             <div className="mb-8">
@@ -123,18 +123,24 @@ export default function PricingPage() {
 
       {/* ── Feature Table ── */}
       <section className="max-w-screen-lg mx-auto px-6 mb-24">
-        <h2 className="font-headline text-4xl font-black uppercase tracking-tighter text-center mb-12 text-on-background dark:text-stone-100">Compare Pass Perks</h2>
+        <h2 className="font-headline text-4xl font-black uppercase tracking-tighter text-center mb-12 text-on-background dark:text-stone-100">Comparez les Avantages</h2>
         <div className="bg-surface-container-lowest dark:bg-stone-800 rounded-xl overflow-hidden shadow-sm border border-outline-variant/10 dark:border-stone-700">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-surface-container-high dark:bg-stone-700">
-                {['Features', 'Starter', 'Pro', 'Elite'].map((h, i) => (
+                {['Fonctionnalités', 'Découverte', 'Passion', 'Elite'].map((h, i) => (
                   <th key={h} className={`p-6 font-headline text-lg uppercase tracking-wider text-on-surface dark:text-stone-100 ${i > 0 ? 'text-center' : ''} ${i === 2 ? '!text-primary-container' : ''}`}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-container-high dark:divide-stone-700">
-              {TABLE.map(({ label, s, p, e }) => (
+              {[
+                { label: 'Carte Interactive Globale',    s: true,       p: true,         e: true },
+                { label: 'Limites de Réservation',        s: '2 / mois',  p: 'Illimité',  e: 'Illimité' },
+                { label: 'Cours Collectifs Live',         s: false,      p: true,         e: true },
+                { label: 'Coaching Personnalisé',         s: false,      p: false,        e: true },
+                { label: 'Analyses de Performance',       s: false,      p: true,         e: true },
+              ].map(({ label, s, p, e }) => (
                 <tr key={label}>
                   <td className="p-6 text-sm font-medium text-on-surface dark:text-stone-200 font-body">{label}</td>
                   <td className="p-6 text-center"><TableCell v={s} /></td>
@@ -150,10 +156,14 @@ export default function PricingPage() {
       {/* ── FAQ ── */}
       <section className="max-w-3xl mx-auto px-6 mb-24">
         <h2 className="font-headline text-4xl font-black uppercase tracking-tighter text-center mb-12 text-on-background dark:text-stone-100">
-          Frequency Asked Questions
+          Questions Fréquemment Posées
         </h2>
         <div className="space-y-4">
-          {FAQS.map(({ q, a }, i) => (
+          {[
+            { q: 'Puis-je annuler mon abonnement à tout moment ?', a: "Oui, vous pouvez annuler à tout moment. Vous conserverez l'accès jusqu'à la fin de votre période de facturation en cours." },
+            { q: 'Y a-t-il une réduction pour le paiement annuel ?',   a: 'Oui ! Choisissez la facturation annuelle lors du paiement pour économiser 20% par rapport au tarif mensuel.' },
+            { q: 'Quels sports sont inclus dans le pass ?',     a: 'Toutes les activités listées dans notre réseau : tennis, natation, fitness, yoga, basket-ball et bien plus encore.' },
+          ].map(({ q, a }, i) => (
             <div key={q} className="bg-surface-container-low dark:bg-stone-800 rounded-xl overflow-hidden border border-outline-variant/10 dark:border-stone-700">
               <button
                 onClick={() => setOpenFaq(openFaq === i ? -1 : i)}
@@ -186,16 +196,16 @@ export default function PricingPage() {
           </div>
           <div className="relative z-10">
             <h2 className="font-headline text-5xl md:text-7xl font-black text-white uppercase tracking-tighter mb-6">
-              Start Free, Play More
+              Commencez Gratuitement, Jouez Plus
             </h2>
             <p className="text-white/70 text-lg mb-10 max-w-xl mx-auto font-medium font-body">
-              Join 50,000+ athletes today. No credit card required for the Starter plan.
+              Rejoignez plus de 50 000 sportifs aujourd'hui. Aucune carte de crédit requise pour le plan Découverte.
             </p>
             <Link
               to="/auth?tab=signup"
               className="inline-block bg-primary text-white font-headline text-2xl font-bold uppercase tracking-widest px-12 py-5 rounded-full shadow-2xl shadow-primary/40 hover:bg-primary-container transition-all active:scale-95"
             >
-              Sign Up Now
+              Inscrivez-vous maintenant
             </Link>
           </div>
         </div>

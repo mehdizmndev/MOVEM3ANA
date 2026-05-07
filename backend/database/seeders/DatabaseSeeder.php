@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             DemoSeeder::class,
             TangierClubsSeeder::class,
+            RealisticContentSeeder::class,
         ]);
     }
 }

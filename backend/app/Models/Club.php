@@ -68,6 +68,14 @@ class Club extends Model
     }
 
     /**
+     * Les offres du club.
+     */
+    public function offers()
+    {
+        return $this->hasMany(Offer::class);
+    }
+
+    /**
      * Les abonnés du club.
      */
     public function subscriptions()

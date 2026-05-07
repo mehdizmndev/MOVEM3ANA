@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { ThemeProvider } from './context/ThemeContext'
 import { AuthProvider } from './context/AuthContext'
@@ -27,6 +28,21 @@ const ProtectedRoute = ({ children, role }) => {
   return children
 }
 
+const GuestRoute = ({ children }) => {
+  const { user, loading } = useAuth()
+  if (loading) return null
+  if (user) return <Navigate to="/" replace />
+  return children
+}
+
+const ScrollToTop = ({ children }) => {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+  return children
+}
+
 const NO_FOOTER = ['/admin', '/club-portal', '/map', '/auth', '/forgot-password']
 
 function Layout() {
@@ -36,24 +52,26 @@ function Layout() {
   return (
     <div className="min-h-screen flex flex-col bg-surface dark:bg-stone-950 text-on-surface dark:text-stone-100">
       <Navbar />
-      <main className="flex-1 pt-[72px]">
-        <Routes>
-          <Route path="/"        element={<HomePage />} />
-          <Route path="/club/:id"    element={<ClubPage />} />
-          <Route path="/club"    element={<Navigate to="/map" replace />} />
-          <Route path="/auth"    element={<AuthPage />} />
-          <Route path="/admin"   element={<ProtectedRoute role="admin"><AdminPage /></ProtectedRoute>} />
-          <Route path="/club-portal" element={<ProtectedRoute role="club"><ClubPortalPage /></ProtectedRoute>} />
-          <Route path="/club-create" element={<ProtectedRoute role="club"><ClubCreationPage /></ProtectedRoute>} />
-          <Route path="/club-events" element={<ProtectedRoute role="club"><ClubEventsManagementPage /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-          <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/map"     element={<MapPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/club/:id/book" element={<BookingPage />} />
-          <Route path="/club/:id/events" element={<ClubEventsPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-        </Routes>
+      <main className="flex-1 pt-[80px]">
+        <ScrollToTop>
+          <Routes>
+            <Route path="/"        element={<HomePage />} />
+            <Route path="/club/:id"    element={<ClubPage />} />
+            <Route path="/club"    element={<Navigate to="/map" replace />} />
+            <Route path="/auth"    element={<GuestRoute><AuthPage /></GuestRoute>} />
+            <Route path="/admin"   element={<ProtectedRoute role="admin"><AdminPage /></ProtectedRoute>} />
+            <Route path="/club-portal" element={<ProtectedRoute role="club"><ClubPortalPage /></ProtectedRoute>} />
+            <Route path="/club-create" element={<ProtectedRoute role="club"><ClubCreationPage /></ProtectedRoute>} />
+            <Route path="/club-events" element={<ProtectedRoute role="club"><ClubEventsManagementPage /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/map"     element={<MapPage />} />
+            <Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} />
+            <Route path="/club/:id/book" element={<BookingPage />} />
+            <Route path="/club/:id/events" element={<ClubEventsPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+          </Routes>
+        </ScrollToTop>
       </main>
       {showFooter && <Footer />}
     </div>

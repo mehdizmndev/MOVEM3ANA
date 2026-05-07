@@ -142,16 +142,38 @@ export default function HomePage() {
     })
   }
 
+  const [currentHeroImg, setCurrentHeroImg] = useState(0)
+  const heroImages = [
+    "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=1920&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1920&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=1920&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1920&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1599058917233-35f69308d0f7?q=80&w=1920&auto=format&fit=crop"
+  ]
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentHeroImg((prev) => (prev + 1) % heroImages.length)
+    }, 5000)
+    return () => clearInterval(timer)
+  }, [heroImages.length])
+
   return (
     <>
       {/* ── Hero ── */}
-      <section className="relative h-[calc(100vh-72px)] w-full flex items-center justify-center overflow-hidden">
+      <section className="relative h-[calc(100vh-80px)] w-full flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img
-            src="https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=1920&auto=format&fit=crop"
-            alt="Sports Hero"
-            className="w-full h-full object-cover brightness-[0.4]"
-          />
+          {heroImages.map((img, idx) => (
+            <img
+              key={img}
+              src={img}
+              alt="Sports Hero"
+              className={`absolute inset-0 w-full h-full object-cover brightness-[0.4] transition-opacity duration-1000 ${
+                idx === currentHeroImg ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          ))}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-surface/20 dark:to-stone-950/20" />
         </div>
         <div className="relative z-10 text-center px-4 max-w-5xl">
           <p className="mb-4 font-body text-sm font-bold uppercase tracking-[0.35em] text-white/80 md:text-base">
@@ -181,7 +203,7 @@ export default function HomePage() {
           </div>
         </div>
         {/* Scroll indicator */}
-        <div className="absolute bottom-10 left-1/2 animate-bounce-arrow">
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce-arrow">
           <Icon name="keyboard_double_arrow_down" size={40} className="text-white/60" />
         </div>
       </section>
@@ -321,7 +343,7 @@ export default function HomePage() {
                   <p className="text-on-secondary-container mb-6 font-medium font-body text-sm">
                     -25% sur votre première réservation dans n'importe quel club partenaire.
                   </p>
-                  <Link to="/auth?tab=signup" className="text-on-surface font-bold underline underline-offset-4 decoration-2 hover:text-primary-container transition-colors font-body">
+                  <Link to="/club/1" className="text-on-surface font-bold underline underline-offset-4 decoration-2 hover:text-primary-container transition-colors font-body">
                     Profiter de l'Offre
                   </Link>
                 </div>

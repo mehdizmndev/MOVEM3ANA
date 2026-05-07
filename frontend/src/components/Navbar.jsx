@@ -133,14 +133,14 @@ export default function Navbar() {
                 to="/auth"
                 className="font-headline uppercase tracking-tighter font-bold text-stone-600 dark:text-stone-400 hover:text-orange-600 dark:hover:text-orange-500 transition-all duration-300 px-4 py-2 rounded-lg hover:bg-stone-200/50 dark:hover:bg-stone-800/50 active:scale-95 transform"
               >
-                Login
+                Connexion
               </Link>
 
               <Link
                 to="/auth?tab=signup"
                 className="font-headline uppercase tracking-tighter font-bold bg-primary-container text-white hover:bg-primary transition-all duration-300 px-6 py-2 rounded-full active:scale-95 transform"
               >
-                Sign Up
+                S'inscrire
               </Link>
             </>
           )}

@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import Icon from '../components/Icon'
 import { clubs as clubsApi, reviews as reviewsApi, events as eventsApi } from '../services/api'
 
-const TABS = ['Aperçu', 'Événements', 'Galerie', 'Avis']
+const TABS = ['Aperçu', 'Offres', 'Événements', 'Galerie', 'Avis']
 const HERO_PH = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1200&auto=format&fit=crop'
 const GAL_PH = [
   'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=600&auto=format&fit=crop',
@@ -74,10 +74,10 @@ export default function ClubPage() {
       </section>
 
       {/* Tabs */}
-      <section className="sticky top-[72px] z-40 bg-surface-container-low dark:bg-stone-800 border-b border-outline-variant/10">
+      <section className="sticky top-[80px] z-40 bg-surface-container-low dark:bg-stone-800 border-b border-outline-variant/10">
         <div className="max-w-7xl mx-auto px-8 flex gap-8 overflow-x-auto hide-scrollbar">
           {TABS.map((l, i) => {
-            const ids = ['overview', 'events', 'gallery', 'reviews']
+            const ids = ['overview', 'offers', 'events', 'gallery', 'reviews']
             return (
               <button 
                 key={l} 
@@ -85,7 +85,7 @@ export default function ClubPage() {
                   setTab(i)
                   const el = document.getElementById(ids[i])
                   if (el) {
-                    const offset = 120 // Header + Tabs height
+                    const offset = 128 // Header (80) + Tabs height (~48)
                     const bodyRect = document.body.getBoundingClientRect().top
                     const elementRect = el.getBoundingClientRect().top
                     const elementPosition = elementRect - bodyRect
@@ -114,13 +114,34 @@ export default function ClubPage() {
             <h2 className="text-4xl font-black italic tracking-tighter font-headline uppercase text-on-surface dark:text-stone-100">À Propos</h2>
             <p className="text-on-surface-variant dark:text-stone-400 text-lg leading-relaxed max-w-2xl font-body">{club.description || 'Aucune description.'}</p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-              {[{icon:'schedule',label:'Horaires',value:club.horaires||'—'},{icon:'call',label:'Tél.',value:club.phone||'—'},{icon:'payments',label:'Tarifs',value:club.tarifs||'—'}].map(({icon,label,value})=>(
+              {[{icon:'schedule',label:'Horaires',value:club.horaires||'—'},{icon:'call',label:'Tél.',value:club.phone||'—'},{icon:'payments',label:'Tarifs (dès)',value:club.tarifs||'—'}].map(({icon,label,value})=>(
                 <div key={label} className="bg-surface-container-high dark:bg-stone-800 p-6 rounded-xl flex flex-col gap-2">
                   <Icon name={icon} size={30} className="text-primary-container" />
                   <span className="text-xs uppercase font-bold text-on-surface-variant font-body">{label}</span>
                   <span className="font-bold text-on-surface dark:text-stone-100 font-body">{value}</span>
                 </div>
               ))}
+            </div>
+          </section>
+
+          {/* Offers Section */}
+          <section id="offers" className="flex flex-col gap-8 scroll-mt-32">
+            <h2 className="text-4xl font-black italic tracking-tighter font-headline uppercase text-on-surface dark:text-stone-100">Nos Offres</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {club.offers && club.offers.length > 0 ? club.offers.map((offer) => (
+                <div key={offer.id} className="bg-surface-container-lowest dark:bg-stone-800 p-6 rounded-2xl border-2 border-primary-container/10 hover:border-primary-container transition-all flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-headline text-xl font-bold uppercase mb-2 text-on-surface dark:text-stone-100">{offer.title}</h3>
+                    <p className="text-sm text-on-surface-variant dark:text-stone-400 mb-6 font-body">{offer.description}</p>
+                  </div>
+                  <div className="mt-auto">
+                    <span className="text-3xl font-black text-primary-container font-headline">{offer.price} DH</span>
+                    <span className="text-xs font-bold text-on-surface-variant uppercase ml-1">/ {offer.period}</span>
+                  </div>
+                </div>
+              )) : (
+                <p className="col-span-3 text-on-surface-variant italic font-body">Contactez le club pour plus d'informations sur les tarifs.</p>
+              )}
             </div>
           </section>
 
