@@ -42,9 +42,9 @@ api.interceptors.response.use(
 );
 
 export const auth = {
-  login: (email, password) => api.post('/login', { email, password }),
-  register: (data) => api.post('/register', data),
-  logout: () => api.post('/logout'),
+  login: (email, password) => api.post('/api/login', { email, password }),
+  register: (data) => api.post('/api/register', data),
+  logout: () => api.post('/api/logout'),
   me: () => api.get('/me'),
 };
 
