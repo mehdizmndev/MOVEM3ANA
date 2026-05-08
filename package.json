@@ -1,5 +1,12 @@
 {
+  "name": "move-m3ana-root",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "install-frontend": "npm install --prefix frontend"
+  },
   "dependencies": {
-    "vite": "^8.0.10"
+    "vite": "^5.3.1"
   }
 }
