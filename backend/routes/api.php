@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
+
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -210,3 +212,29 @@ Route::get('/test', function () {
         'message' => 'API fonctionne'
     ]);
 });
+
+
+Route::post('/login', function (Request $request) {
+
+    $user = User::where('email', $request->email)->first();
+
+    if (!$user) {
+        return response()->json([
+            'success' => false,
+            'message' => 'User not found'
+        ], 401);
+    }
+
+    if (!Hash::check($request->password, $user->password)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Wrong password'
+        ], 401);
+    }
+
+    return response()->json([
+        'success' => true,
+        'user' => $user
+    ]);
+});
+
