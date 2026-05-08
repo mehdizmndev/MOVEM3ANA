@@ -6,10 +6,6 @@
     {
       "source": "/api/:path*",
       "destination": "https://movem3ana-production.up.railway.app/api/:path*"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
     }
   ]
 }
