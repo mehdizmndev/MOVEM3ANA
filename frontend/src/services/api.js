@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: 'https://movem3ana-production.up.railway.app/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -42,9 +42,9 @@ api.interceptors.response.use(
 );
 
 export const auth = {
-  login: (email, password) => api.post('/api/login', { email, password }),
-  register: (data) => api.post('/api/register', data),
-  logout: () => api.post('/api/logout'),
+  login: (email, password) => api.post('/login', { email, password }),
+  register: (data) => api.post('/register', data),
+  logout: () => api.post('/logout'),
   me: () => api.get('/me'),
 };
 
