@@ -131,7 +131,15 @@ export const admin = {
 
 // ─── User Profile API ─────────────────────────────────────────────
 export const profile = {
-  update: (data) => api.put('/users/profile', data),
+  update: (data) => {
+    if (data instanceof FormData) {
+      data.append('_method', 'PUT');
+      return api.post('/users/profile', data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+    }
+    return api.put('/users/profile', data);
+  },
   updatePassword: (data) => api.put('/users/profile/password', data),
 };
 
