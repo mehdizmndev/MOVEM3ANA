@@ -25,6 +25,7 @@ export default function ProfilePage() {
       const res = await profileApi.update(formData)
       setUser(res.data.data)
       setSuccess('Profil mis à jour avec succès !')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err) {
       console.error('Update error:', err.response?.data)
       const errorMsg = err.response?.data?.errors 

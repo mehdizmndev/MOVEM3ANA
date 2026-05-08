@@ -27,6 +27,7 @@ export default function ContactPage() {
       await general.contact(form)
       setSuccess(true)
       setForm({ ...form, subject: '', message: '' })
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err) {
       setError(err.response?.data?.message || 'Une erreur est survenue lors de l\'envoi.')
     } finally {
