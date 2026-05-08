@@ -90,8 +90,12 @@ export default function ProfilePage() {
                 </div>
                 <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-widest text-stone-500 font-body">Nom Complet</label>
-                    <input name="name" defaultValue={user?.name} className="w-full bg-stone-50 dark:bg-stone-800 border-b-2 border-stone-200 dark:border-stone-700 focus:border-primary-container p-3 rounded-t-lg transition-all font-body text-on-surface dark:text-stone-100" />
+                    <label className="text-xs font-bold uppercase tracking-widest text-stone-500 font-body">Prénom</label>
+                    <input name="first_name" defaultValue={user?.name?.split(' ')[0]} className="w-full bg-stone-50 dark:bg-stone-800 border-b-2 border-stone-200 dark:border-stone-700 focus:border-primary-container p-3 rounded-t-lg transition-all font-body text-on-surface dark:text-stone-100" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold uppercase tracking-widest text-stone-500 font-body">Nom</label>
+                    <input name="last_name" defaultValue={user?.name?.split(' ').slice(1).join(' ')} className="w-full bg-stone-50 dark:bg-stone-800 border-b-2 border-stone-200 dark:border-stone-700 focus:border-primary-container p-3 rounded-t-lg transition-all font-body text-on-surface dark:text-stone-100" />
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs font-bold uppercase tracking-widest text-stone-500 font-body">Email</label>

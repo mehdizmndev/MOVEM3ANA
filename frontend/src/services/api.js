@@ -42,10 +42,10 @@ api.interceptors.response.use(
 );
 
 export const auth = {
-  login: (email, password) => api.post('/login', { email, password }),
-  register: (data) => api.post('/register', data),
-  logout: () => api.post('/logout'),
-  me: () => api.get('/me'),
+  login: (email, password) => api.post('/auth/login', { email, password }),
+  register: (data) => api.post('/auth/register', data),
+  logout: () => api.post('/auth/logout'),
+  me: () => api.get('/auth/me'),
 };
 
 // ─── Clubs API ───────────────────────────────────────────────────

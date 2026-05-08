@@ -34,47 +34,10 @@ use App\Http\Controllers\Api\ContactController;
 */
 
 
-Route::post('/login', function (Request $request) {
-
-    $user = User::where('email', $request->email)->first();
-
-    if (!$user) {
-        return response()->json([
-            'success' => false,
-            'message' => 'User not found'
-        ], 401);
-    }
-
-    if (!Hash::check($request->password, $user->password)) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Wrong password'
-        ], 401);
-    }
-
-    return response()->json([
-        'success' => true,
-        'user' => $user
-    ]);
-});
-
-Route::post('/register', function (Request $request) {
-
-    $user = User::create([
-        'name' => $request->first_name . ' ' . $request->last_name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-    ]);
-
-    return response()->json([
-        'success' => true,
-        'user' => $user
-    ]);
-});
-
-
 // ─── 1. Authentification (routes publiques) ──────────────────────────────
 Route::prefix('auth')->group(function () {
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
     Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
 

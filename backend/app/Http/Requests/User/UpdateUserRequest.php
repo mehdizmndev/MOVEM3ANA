@@ -15,6 +15,8 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'name'              => 'sometimes|string|max:255',
+            'first_name'        => 'sometimes|string|max:255',
+            'last_name'         => 'sometimes|string|max:255',
             'phone'             => 'nullable|string|max:20',
             'avatar'            => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'sport_preferences' => 'nullable|array',

@@ -130,6 +130,13 @@ class UserController extends Controller
         // 🔐 empêcher modification du role
         unset($data['role']);
 
+        if (isset($data['first_name']) || isset($data['last_name'])) {
+            $firstName = $data['first_name'] ?? explode(' ', $user->name)[0] ?? '';
+            $lastName = $data['last_name'] ?? implode(' ', array_slice(explode(' ', $user->name), 1)) ?? '';
+            $data['name'] = trim("$firstName $lastName");
+            unset($data['first_name'], $data['last_name']);
+        }
+
         if ($request->hasFile('avatar')) {
             if ($user->avatar) {
                 Storage::disk('public')->delete($user->avatar);
