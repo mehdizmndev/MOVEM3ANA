@@ -72,38 +72,6 @@ Route::post('/register', function (Request $request) {
     ]);
 });
 
-Route::post('/login', function (Request $request) {
-
-    $user = User::where('email', $request->email)->first();
-
-    if (!$user || !Hash::check($request->password, $user->password)) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Invalid credentials'
-        ], 401);
-    }
-
-    return response()->json([
-        'success' => true,
-        'token' => 'fake-token',
-        'user' => $user
-    ]);
-});
-
-Route::post('/register', function (Request $request) {
-
-    $user = User::create([
-        'name' => $request->first_name . ' ' . $request->last_name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-    ]);
-
-    return response()->json([
-        'success' => true,
-        'token' => 'fake-token',
-        'user' => $user
-    ]);
-});
 
 // ─── 1. Authentification (routes publiques) ──────────────────────────────
 Route::prefix('auth')->group(function () {
