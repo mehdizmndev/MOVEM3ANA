@@ -45,14 +45,8 @@ export function AuthProvider({ children }) {
   };
 
   const register = async (data) => {
-    // Combine first_name + last_name into name if needed
     const payload = { ...data };
-    if (payload.first_name && payload.last_name) {
-      payload.name = `${payload.first_name} ${payload.last_name}`;
-      delete payload.first_name;
-      delete payload.last_name;
-    }
-
+    // Stop deleting first_name/last_name here, let them reach the API which validates them
     const response = await authApi.register(payload);
     const resData = response.data;
 
