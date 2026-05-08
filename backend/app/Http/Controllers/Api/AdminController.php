@@ -23,7 +23,7 @@ class AdminController extends Controller
     {
         $club = Club::findOrFail($id);
 
-        $approved = $request->input('approved', true);
+        $approved = $request->input('is_approved', $request->input('approved', true));
         $club->update(['is_approved' => $approved]);
 
         // Log de l'activité

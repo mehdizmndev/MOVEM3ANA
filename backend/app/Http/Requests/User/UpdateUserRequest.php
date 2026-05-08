@@ -17,8 +17,9 @@ class UpdateUserRequest extends FormRequest
             'name'              => 'sometimes|string|max:255',
             'first_name'        => 'sometimes|string|max:255',
             'last_name'         => 'sometimes|string|max:255',
+            'email'             => 'sometimes|email|max:255',
             'phone'             => 'nullable|string|max:20',
-            'avatar'            => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'avatar'            => 'nullable', // On valide l'image plus bas ou on laisse nullable pour les strings
             'sport_preferences' => 'nullable|array',
             'sport_preferences.*' => 'string|max:100',
         ];

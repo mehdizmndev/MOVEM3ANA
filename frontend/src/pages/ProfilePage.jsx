@@ -26,7 +26,11 @@ export default function ProfilePage() {
       setUser(res.data.data)
       setSuccess('Profil mis à jour avec succès !')
     } catch (err) {
-      setError(err.response?.data?.message || 'Erreur lors de la mise à jour.')
+      console.error('Update error:', err.response?.data)
+      const errorMsg = err.response?.data?.errors 
+        ? Object.values(err.response.data.errors).flat().join(' ')
+        : (err.response?.data?.message || 'Erreur lors de la mise à jour.')
+      setError(errorMsg)
     } finally {
       setLoading(false)
     }
