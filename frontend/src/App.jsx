@@ -18,6 +18,7 @@ import ProfilePage from './pages/ProfilePage'
 import ClubPortalPage from './pages/ClubPortalPage'
 import ClubCreationPage from './pages/ClubCreationPage'
 import ClubEventsManagementPage from './pages/ClubEventsManagementPage'
+import TermsPage from './pages/TermsPage'
 import { useAuth } from './context/AuthContext'
 
 const ProtectedRoute = ({ children, role }) => {
@@ -70,6 +71,7 @@ function Layout() {
             <Route path="/club/:id/book" element={<BookingPage />} />
             <Route path="/club/:id/events" element={<ClubEventsPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/terms" element={<TermsPage />} />
           </Routes>
         </ScrollToTop>
       </main>

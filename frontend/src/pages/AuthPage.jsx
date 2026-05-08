@@ -314,19 +314,21 @@ export default function AuthPage() {
                   />
                   <label className="text-xs text-stone-500 leading-tight font-body">
                     By creating an account, I agree to the{" "}
-                    <a
-                      href="#"
+                    <Link
+                      to="/terms"
+                      target="_blank"
                       className="text-primary-container font-semibold hover:underline"
                     >
                       Terms of Service
-                    </a>{" "}
+                    </Link>{" "}
                     and{" "}
-                    <a
-                      href="#"
+                    <Link
+                      to="/terms"
+                      target="_blank"
                       className="text-primary-container font-semibold hover:underline"
                     >
                       Privacy Policy
-                    </a>
+                    </Link>
                     .
                   </label>
                 </div>
