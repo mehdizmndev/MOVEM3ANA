@@ -53,21 +53,20 @@ class Event extends Model
     }
 
     /**
-     * Obtenir le nombre de places restantes.
+     * Obtenir le nombre de places restantes (ici directement la capacité car elle baisse à chaque inscription).
      */
     public function getAvailableSlotsAttribute()
     {
-        if ($this->capacity === null) return null;
-        return max(0, $this->capacity - $this->registrations()->where('status', 'confirmed')->count());
+        return $this->capacity;
     }
-
+ 
     /**
      * Vérifier si l'événement est complet.
      */
     public function getIsSoldOutAttribute()
     {
         if ($this->capacity === null) return false;
-        return $this->available_slots <= 0;
+        return $this->capacity <= 0;
     }
 
     /**

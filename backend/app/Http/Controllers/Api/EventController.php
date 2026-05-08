@@ -43,6 +43,18 @@ class EventController extends Controller
             $data['image'] = $request->file('image')->store('events', 'public');
         }
 
+        // Vérifier s'il y a déjà un événement à ce moment pour ce club
+        $exists = Event::where('club_id', $data['club_id'])
+            ->where('date', $data['date'])
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Un événement est déjà prévu à cette date et heure pour ce club.',
+            ], 422);
+        }
+
         $event = Event::create($data);
 
         return response()->json([
@@ -113,6 +125,21 @@ class EventController extends Controller
                 Storage::disk('public')->delete($event->image);
             }
             $data['image'] = $request->file('image')->store('events', 'public');
+        }
+
+        // Vérifier s'il y a déjà un événement à ce moment pour ce club (exclure l'actuel)
+        if (isset($data['date'])) {
+            $exists = Event::where('club_id', $club->id)
+                ->where('date', $data['date'])
+                ->where('id', '!=', $event->id)
+                ->exists();
+
+            if ($exists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Un autre événement est déjà prévu à cette date et heure pour ce club.',
+                ], 422);
+            }
         }
 
         $event->update($data);
@@ -235,12 +262,14 @@ class EventController extends Controller
             ], 400);
         }
 
-        // 3. Créer l'inscription
+        // 3. Créer l'inscription et baisser la capacité
         \App\Models\EventRegistration::create([
             'user_id'  => $user->id,
             'event_id' => $event->id,
             'status'   => 'confirmed',
         ]);
+
+        $event->decrement('capacity');
 
         return response()->json([
             'success' => true,
@@ -257,7 +286,13 @@ class EventController extends Controller
             ->where('event_id', $eventId)
             ->firstOrFail();
 
+        $event = $registration->event;
         $registration->delete();
+
+        // Augmenter la capacité
+        if ($event) {
+            $event->increment('capacity');
+        }
 
         return response()->json([
             'success' => true,

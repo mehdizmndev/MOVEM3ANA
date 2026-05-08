@@ -153,20 +153,49 @@ export default function ClubPage() {
             </div>
             {evts.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {evts.slice(0,4).map(ev => (
-                  <div key={ev.id} className="bg-surface-container-lowest dark:bg-stone-800 p-6 rounded-2xl shadow-sm border border-outline-variant/10 hover:border-primary-container/40 transition-all">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="bg-primary-container/10 p-3 rounded-xl"><Icon name="event" size={22} className="text-primary-container" /></div>
-                      <span className="text-sm font-bold text-primary-container">{ev.capacity ? `${ev.capacity} places` : ''}</span>
+                {evts.slice(0,4).map(ev => {
+                  const isEnrolled = ev.is_enrolled;
+                  return (
+                    <div key={ev.id} className="bg-surface-container-lowest dark:bg-stone-800 p-6 rounded-2xl shadow-sm border border-outline-variant/10 hover:border-primary-container/40 transition-all">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="bg-primary-container/10 p-3 rounded-xl"><Icon name="event" size={22} className="text-primary-container" /></div>
+                        <span className="text-sm font-bold text-primary-container">{ev.capacity !== null ? `${ev.capacity} places restantes` : ''}</span>
+                      </div>
+                      <h3 className="text-xl font-bold mb-1 text-on-surface dark:text-stone-100 font-body">{ev.title}</h3>
+                      <p className="text-on-surface-variant text-sm mb-4 font-body line-clamp-2">{ev.description}</p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-col">
+                          <span className="text-sm font-semibold text-on-surface dark:text-stone-100 font-body">{ev.date ? new Date(ev.date).toLocaleDateString('fr-FR') : 'Bientôt'}</span>
+                          <span className="text-xs text-on-surface-variant font-body">{ev.date ? new Date(ev.date).toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}) : ''}</span>
+                        </div>
+                        <button 
+                          onClick={async () => {
+                            if (isEnrolled) return;
+                            try {
+                              const res = await eventsApi.enroll(ev.id);
+                              alert(res.data.message);
+                              // Refresh events
+                              const eR = await eventsApi.byClub(id);
+                              const e = eR?.data?.data || []; setEvts(Array.isArray(e) ? e : []);
+                            } catch (err) {
+                              alert(err.response?.data?.message || "Erreur lors de l'inscription");
+                            }
+                          }}
+                          disabled={isEnrolled || ev.is_sold_out}
+                          className={`px-5 py-2 rounded-lg font-headline font-bold uppercase text-sm transition-all ${
+                            isEnrolled 
+                              ? "bg-green-100 text-green-700 cursor-default" 
+                              : ev.is_sold_out 
+                                ? "bg-stone-200 text-stone-400 cursor-not-allowed"
+                                : "bg-primary-container text-white hover:bg-primary active:scale-95"
+                          }`}
+                        >
+                          {isEnrolled ? "Inscrit" : ev.is_sold_out ? "Complet" : "S'inscrire"}
+                        </button>
+                      </div>
                     </div>
-                    <h3 className="text-xl font-bold mb-1 text-on-surface dark:text-stone-100 font-body">{ev.title}</h3>
-                    <p className="text-on-surface-variant text-sm mb-4 font-body line-clamp-2">{ev.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold text-on-surface dark:text-stone-100 font-body">{ev.date ? new Date(ev.date).toLocaleDateString('fr-FR') : 'Bientôt'}</span>
-                      <Link to={`/club/${id}/book`} className="bg-primary-container text-white px-5 py-2 rounded-lg font-headline font-bold uppercase text-sm">Réserver</Link>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : <p className="text-on-surface-variant font-body text-center py-8">Aucun événement prévu.</p>}
           </section>
