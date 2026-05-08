@@ -165,9 +165,8 @@ class UserController extends Controller
         ]);
 
         $user = auth()->user();
-        $user->update([
-            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
-        ]);
+        $user->password = $validated['password'];
+        $user->save();
 
         return response()->json([
             'success' => true,
