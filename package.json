@@ -2,9 +2,9 @@
   "name": "move-m3ana-root",
   "private": true,
   "scripts": {
-    "dev": "npm run dev --prefix frontend",
-    "build": "npm run build --prefix frontend",
-    "install-frontend": "npm install --prefix frontend"
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm install && npm run build",
+    "install-frontend": "cd frontend && npm install"
   },
   "dependencies": {
     "vite": "^5.3.1"

@@ -4,7 +4,6 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "framework": "vite",
-  "outputDirectory": "frontend/dist",
   "rewrites": [
     {
       "source": "/api/:path*",
