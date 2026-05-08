@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://movem-3-ana.vercel.app'],
+    'allowed_origins' => ['*'],
     //'allowed_origins' => ['https://ton-app.vercel.app'],
     //'allowed_origins' => ['http://localhost:5173'],//pour react vit
 

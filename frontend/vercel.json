@@ -1,5 +1,12 @@
 {
+  "version": 2,
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://movem3ana-production.up.railway.app/api/:path*"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
